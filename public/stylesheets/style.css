@@ -1,8 +1,26 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+.play-area {
+    width: 100%;
+    height: 50vh;
+    background-color: #f0f0f0;
+    display: block;
 }
 
-a {
-  color: #00B7FF;
+.home-area {
+    width: 100%;
+    height: 25vh;
+    background-color: #e0e0e0;
+    display: block;
+}
+
+.card {
+    height: 15vh;
+    position: absolute;
+    left: 1vh;
+}
+
+.pile {
+    display: inline-block;
+    padding-left: 1vh;
+    padding-right: 1vh;
+    position: relative;
 }
