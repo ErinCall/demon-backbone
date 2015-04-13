@@ -11,6 +11,9 @@
     "debug": "~2.1.1",
     "express": "~4.11.1",
     "jade": "~1.9.1",
+    "jasmine": "^2.2.1",
+    "knuth-shuffle": "^1.0.1",
+    "lodash": "^3.6.0",
     "morgan": "~1.5.1",
     "serve-favicon": "~2.2.0"
   }
