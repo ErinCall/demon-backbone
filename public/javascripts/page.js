@@ -39,7 +39,32 @@ $(function() {
     initialize: function(cards) {
       this.cards = cards;
     }
-  })
+  });
+
+  function renderCardFront(card, css) {
+    if (typeof card === 'string') {
+      card = new Card(JSON.parse(card));
+    }
+    var $card = $('<img class="card">');
+    $card.css(css);
+    $card.attr('src', card.imageUrl());
+    $card.attr('alt', card.description());
+
+    $card.on('dragstart', function(event) {
+      event.originalEvent.dataTransfer.setData('application/json', JSON.stringify(card));
+      event.originalEvent.dataTransfer.effectAllowed = 'move';
+    });
+
+    $card.on('dragend', function(event) {
+      event.preventDefault();
+      if (event.originalEvent.dataTransfer.dropEffect === 'move') {
+        $card.detach();
+        // RIGHT HERE, we need to tell the pile to remove us. Hm!
+      }
+    });
+
+    return $card;
+  }
 
   var BuildPile = Pile.extend({
     render: function(offset) {
@@ -49,15 +74,23 @@ $(function() {
         // Pile widths are basically the cards' width; cards are defined in terms
         // of viewport *height*, so the pile position also needs to be in those
         // terms. I've found a 10vh-wide pile is about right for 15vh-tall cards.
-        $pile.css({left: (offset * 10) + 'vh'})
+        $pile.css({left: (offset * 10) + 'vh'});
       }
       this.cards.forEach(function(card, index) {
-        var $card = $('<img class="card">');
-        $card.css({top: index + 'vh'})
-        $card.attr('src', card.imageUrl());
-        $card.attr('alt', card.description());
-        $pile.append($card);
-      })
+        $pile.append(renderCardFront(card, {top: index + 'vh'}))
+      });
+
+      $pile.on('dragover', function(event) {
+        var card = event.originalEvent.dataTransfer.getData('application/json');
+        event.originalEvent.preventDefault();
+      });
+
+      $pile.on('drop', function(event) {
+        event.preventDefault();
+        var card = new Card(JSON.parse(event.originalEvent.dataTransfer.getData('application/json')));
+        this.cards.push(card);
+        $pile.append(renderCardFront(card, {top: this.cards.length + 'vh'}))
+      }.bind(this));
 
       return $pile;
     }
@@ -71,13 +104,13 @@ $(function() {
 
       this.cards.slice(0, -1).forEach(function(card, index) {
         var $card = $('<img class="card">');
-        $card.css({top: (index / 2) + 'vh'})
+        $card.css({top: (index / 2) + 'vh'});
         $card.attr('src', card.backUrl());
         $card.attr('alt', 'unknown card');
         $pile.append($card);
-      })
+      });
 
-      $card.css({top: ((this.cards.length - 1) / 2) + 'vh'})
+      $card.css({top: ((this.cards.length - 1) / 2) + 'vh'});
       $card.attr('src', topCard.imageUrl());
       $card.attr('alt', topCard.description());
       $pile.append($card);
